@@ -15,7 +15,7 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.use('/', require('./routes/products'))
+app.use('/products', require('./routes/products'))
 
 
 async function start() {

@@ -7,29 +7,100 @@ const productSchema = mongoose.Schema({
     count: mongoose.Schema.Types.Number
 })
 
-const productModel = mongoose.model('products', productSchema)
+const ProductModel = mongoose.model('products', productSchema)
 
 const test = async () => {
-    const found = await productModel.findOne({name})
+    const found = await ProductModel.findOne({name})
     console.log(found)
     return found
 
 }
 
 const create = async ({name, price, count}) => {
-    const found = await productModel.findOne({name})
-    console.log(found)
+    const found = await getByName(name)
+    console.log(name, found)
+    if (found) {
+        return new Error(`You can not create product with name "${name}". It already exists`)
+    }
+
+    const obj = {_id: new mongoose.Types.ObjectId(), name, price, count}
+    return await ProductModel.create(obj)
+}
+
+const deleteByName = async (name) => {
+    const deleted = await ProductModel.deleteOne({name})
+    return deleted
+}
+
+const getByName = async (name) => {
+    const found = await ProductModel.findOne({name})
+    // console.log(found)
+    return found
 }
 
 const getSliceInRange = async (start = 0, end = 0) => {
-    const found = await productModel.findOne({name: "test"})
+    const found = await ProductModel.find()
+    return found
+}
+
+const updateByName = async (name, newData = {
+    newName: undefined,
+    newPrice: undefined,
+    newCount: undefined
+}) => {
+    function filterUndefineds() {
+        return Object.keys(newData)
+            .filter(key => key !== undefined)
+            .reduce((obj, key) => {
+                obj[key] = raw[key];
+                return obj;
+            }, {});
+    }
+
+    newData = filterUndefineds(newData)
+
+    ProductModel.findOneAndUpdate(
+        {name}, newData
+    )
+}
+
+const listByFilter = async ({
+                                innerName = undefined,
+                                minCount = undefined,
+                                minPrice = undefined,
+                                maxPrice = undefined
+                            }) => {
+    let priceObj = {}
+    if (minPrice !== undefined) {
+        priceObj.$gt = minPrice
+    }
+    if (maxPrice !== undefined) {
+        priceObj.$lt = maxPrice
+    }
+
+    let countObj = {}
+    if (minCount !== undefined) {
+        countObj.$gt = minCount
+    }
+
+    const query = ProductModel.find(
+        {
+            // price: priceObj,
+            count: countObj
+        }
+    )
+    const found = await query.exec()
     return found
 }
 
 const ProductsAPI = {
     test,
     create,
-    getSliceInRange
+    deleteByName,
+    getSliceInRange,
+    listByFilter,
+    getByName,
+    updateByName
 }
 
 module.exports = ProductsAPI
