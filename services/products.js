@@ -1,8 +1,5 @@
 const DbProductsAPI = require('../models/Products')
 
-const elementsCountOnPage = 6
-const defaultPageNumber = 1
-
 
 /**
  * not required:
