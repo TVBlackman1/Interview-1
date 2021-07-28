@@ -6,6 +6,12 @@ const config = require('config')
 const mongoose = require('mongoose')
 const logger = require('morgan');
 const bodyParser = require('body-parser')
+// const formData = require('express-form-data');
+// const fileUpload = require('express-fileupload');
+// const multer  =   require('multer');
+// const upload = multer({ dest: 'uploads/' })
+//
+
 
 
 const PORT = config.get('port') || 3000
@@ -15,7 +21,9 @@ const app = express()
 app.use(cors())
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(express.urlencoded({ extended: false }));
+// app.use(formData.parse());
+// app.use(fileUpload())
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/products', require('./routes/products'))
 

@@ -3,9 +3,7 @@ const router = express.Router();
 
 const ProductsService = require('../services/products')
 
-// router.get('/', function(req, res, next) {
-//     res.send('respond with a resource');
-// });
+router.use(require('./product-image'))
 
 router.post('/list', async function (req, res) {
     const serviceRes = await ProductsService.getList({
@@ -22,13 +20,13 @@ router.post('/filters', async function (req, res) {
     let pageNumber = req.body.pageNumber
 
     let obj = {}
-    if(inStock) {
+    if (inStock) {
         obj.minCount = 0
     }
-    if(maxPrice) {
+    if (maxPrice) {
         obj.maxPrice = maxPrice
     }
-    if(startsWith) {
+    if (startsWith) {
         obj.innerName = startsWith
     }
     const serviceRes = await ProductsService.listByFilter(obj, {pagination: pageNumber, count: 6})
@@ -67,5 +65,10 @@ router.get('/current/:name', async function (req, res) {
     res.status(200).send(serviceRes)
 })
 
+router.post('/upload-image', (req, res) => {
+    console.log(req.body);
+    let sampleFile = req.files
+    console.log(sampleFile);
+})
 
 module.exports = router;
