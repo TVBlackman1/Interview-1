@@ -10,13 +10,6 @@ const productSchema = mongoose.Schema({
 
 const ProductModel = mongoose.model('products', productSchema)
 
-const test = async () => {
-    const found = await ProductModel.findOne({name})
-    console.log(found)
-    return found
-
-}
-
 const create = async ({name, price, count}) => {
     const found = await getByName(name)
     console.log(name, found)
@@ -88,16 +81,15 @@ const updateById = async (id, newData = {
 
     newData = filterUndefineds(newData)
 
-    return await ProductModel.findOneAndUpdate(
+    return ProductModel.findOneAndUpdate(
         {_id: id}, newData
-    )
+    );
 }
 
 const getSliceOfQuery = async (query, start, length) => {
     console.log(query instanceof Query)
     let res = query.skip(start).limit(length).exec()
     return res
-    // return deleted
 }
 
 const listByFilter = ({
@@ -107,7 +99,6 @@ const listByFilter = ({
                                 maxPrice = undefined
                             }, pag) => {
     let filterObj = {}
-    // console.log(minCount)
 
     let priceObj = {}
     if (minPrice !== undefined) {
@@ -124,20 +115,21 @@ const listByFilter = ({
     if (minCount !== undefined) {
         countObj.$gt = minCount
         filterObj.count = countObj
-        // console.log("!!!")
+    }
+
+    let innerNameObj = {}
+    if (innerName !== undefined) {
+        innerNameObj.$in =  new RegExp(`^${innerName}`)
+        filterObj.name = innerNameObj
     }
 
     const query = ProductModel.find(
         filterObj
     )
-    // console.log(query)
     return query
-    // const found = await query.exec()
-    // return found
 }
 
 const ProductsAPI = {
-    test,
     create,
     deleteByName,
     getSliceInRange,
