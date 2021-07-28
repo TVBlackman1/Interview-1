@@ -71,6 +71,7 @@ const listByFilter = async ({
                                 maxPrice = undefined
                             }) => {
     let filterObj = {}
+    // console.log(minCount)
 
     let priceObj = {}
     if (minPrice !== undefined) {
@@ -87,6 +88,7 @@ const listByFilter = async ({
     if (minCount !== undefined) {
         countObj.$gt = minCount
         filterObj.count = countObj
+        // console.log("!!!")
     }
 
     const query = ProductModel.find(

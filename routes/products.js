@@ -7,6 +7,30 @@ router.get('/', function(req, res, next) {
     res.send('respond with a resource');
 });
 
+router.post('/list', async function (req, res) {
+    const serviceRes = await ProductsService.getList({
+        // pagination: req.body.pagination
+    })
+
+    res.status(200).send(serviceRes)
+})
+
+router.post('/filters', async function (req, res) {
+    let inStock = req.body.inStock
+    let maxPrice = req.body.maxPrice
+
+    let obj = {}
+    if(inStock) {
+        obj.minCount = 0
+    }
+    if(maxPrice) {
+        obj.maxPrice = maxPrice
+    }
+    const serviceRes = await ProductsService.listByFilter(obj)
+    // console.log(serviceRes)
+    res.status(200).send(serviceRes)
+})
+
 router.get('/list', async function (req, res) {
     const serviceRes = await ProductsService.getList({
         // pagination: req.body.pagination
