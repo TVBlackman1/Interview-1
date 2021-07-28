@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const {Query} = require("mongoose");
 
 const productSchema = mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
@@ -29,6 +30,11 @@ const create = async ({name, price, count}) => {
 
 const deleteByName = async (name) => {
     const deleted = await ProductModel.deleteOne({name})
+    return deleted
+}
+
+const deleteById = async (id) => {
+    const deleted = await ProductModel.deleteOne({_id: id})
     return deleted
 }
 
@@ -64,12 +70,42 @@ const updateByName = async (name, newData = {
     )
 }
 
-const listByFilter = async ({
+const updateById = async (id, newData = {
+    name: undefined,
+    price: undefined,
+    count: undefined
+}) => {
+
+    console.log(id, newData)
+    function filterUndefineds() {
+        return Object.keys(newData)
+            .filter(key => key !== undefined)
+            .reduce((obj, key) => {
+                obj[key] = newData[key];
+                return obj;
+            }, {});
+    }
+
+    newData = filterUndefineds(newData)
+
+    return await ProductModel.findOneAndUpdate(
+        {_id: id}, newData
+    )
+}
+
+const getSliceOfQuery = async (query, start, length) => {
+    console.log(query instanceof Query)
+    let res = query.skip(start).limit(length).exec()
+    return res
+    // return deleted
+}
+
+const listByFilter = ({
                                 innerName = undefined,
                                 minCount = undefined,
                                 minPrice = undefined,
                                 maxPrice = undefined
-                            }) => {
+                            }, pag) => {
     let filterObj = {}
     // console.log(minCount)
 
@@ -94,8 +130,10 @@ const listByFilter = async ({
     const query = ProductModel.find(
         filterObj
     )
-    const found = await query.exec()
-    return found
+    // console.log(query)
+    return query
+    // const found = await query.exec()
+    // return found
 }
 
 const ProductsAPI = {
@@ -105,7 +143,10 @@ const ProductsAPI = {
     getSliceInRange,
     listByFilter,
     getByName,
-    updateByName
+    updateByName,
+    updateById,
+    deleteById,
+    getSliceOfQuery
 }
 
 module.exports = ProductsAPI

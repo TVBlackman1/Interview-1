@@ -1,6 +1,6 @@
 const DbProductsAPI = require('../models/Products')
 
-const elementsCountOnPage = 30
+const elementsCountOnPage = 6
 const defaultPageNumber = 1
 
 
@@ -51,6 +51,10 @@ const editByName = async (name, {newName, newPrice, newCount}) => {
     await DbProductsAPI.updateByName(name, {newName, newPrice, newCount})
 }
 
+const editById = async (id, {newName, newPrice, newCount}) => {
+    await DbProductsAPI.updateById(id, {name: newName, price: newPrice, count: newCount})
+}
+
 const changePriceByName = async (name, newPrice) => {
     return await DbProductsAPI.updateByName(name, {undefined, newPrice, undefined})
 }
@@ -63,8 +67,20 @@ const deleteByName = async (name) => {
     return await DbProductsAPI.deleteByName(name)
 }
 
-const listByFilter = async ({innerName, minCount, minPrice, maxPrice}) => {
-    return await DbProductsAPI.listByFilter({innerName, minCount, minPrice, maxPrice})
+const deleteById = async (id) => {
+    return await DbProductsAPI.deleteById(id)
+}
+
+
+const listByFilter = async ({innerName, minCount, minPrice, maxPrice}, options = {pagination:1, count: 6}) => {
+    const pagination = options.pagination || defaultPageNumber
+    const elementsCount = options.count || elementsCountOnPage
+
+    const startIndex = elementsCount * (pagination - 1)
+
+    let query = DbProductsAPI.listByFilter({innerName, minCount, minPrice, maxPrice})
+    // console.log("!!!!", query, "!!!!")
+    return await DbProductsAPI.getSliceOfQuery(query, startIndex, elementsCount)
 }
 
 const ProductsAPI = {
@@ -76,7 +92,9 @@ const ProductsAPI = {
     getList,
     getByName,
     deleteByName,
-    listByFilter
+    listByFilter,
+    editById,
+    deleteById
 }
 
 module.exports = ProductsAPI
