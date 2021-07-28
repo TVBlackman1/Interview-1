@@ -92,7 +92,7 @@ const getSliceOfQuery = async (query, start, length) => {
     return res
 }
 
-const listByFilter = ({
+const queryByFilter = ({
                                 innerName = undefined,
                                 minCount = undefined,
                                 minPrice = undefined,
@@ -133,7 +133,7 @@ const ProductsAPI = {
     create,
     deleteByName,
     getSliceInRange,
-    listByFilter,
+    queryByFilter,
     getByName,
     updateByName,
     updateById,

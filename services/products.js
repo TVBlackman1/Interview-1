@@ -75,7 +75,7 @@ const listByFilter = async ({innerName, minCount, minPrice, maxPrice}, options =
 
     const startIndex = elementsCount * (pagination - 1)
 
-    let query = DbProductsAPI.listByFilter({innerName, minCount, minPrice, maxPrice})
+    let query = DbProductsAPI.queryByFilter({innerName, minCount, minPrice, maxPrice})
     console.log(innerName)
     return await DbProductsAPI.getSliceOfQuery(query, startIndex, elementsCount)
 }
